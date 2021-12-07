@@ -14,26 +14,30 @@
   </div>
 </template>
 <script>
+import axios from 'axios';
+
 export default {
   name: 'BoardList',
   data() {
     return {
-      boardList:[
-        { id: 1, name: "test 1", description: "test 1"},
-        { id: 2, name: "test 2", description: "test 2"},
-        { id: 3, name: "test 3", description: "test 3"},
-        { id: 4, name: "test 4", description: "test 4"},
-        { id: 5, name: "test 5", description: "test 5"},
-        { id: 6, name: "test 6", description: "test 6"},
-        { id: 7, name: "test 7", description: "test 7"},
-      ]
+      api: process.env.VUE_APP_API_URL,
+      boardList:[]
     }
   },
   methods:{
     runNav(id) {
-      console.log("Run nav running!")
       this.$router.push(`board/${id}`)
+    },
+    getBoards() {
+      axios.get(`${this.api}/boards`).then(res => {
+        this.boardList = res.data 
+      }).catch(err => {
+        console.error(err)
+      })
     }
+  },
+  mounted() {
+    this.getBoards()
   }
 }
 </script>
