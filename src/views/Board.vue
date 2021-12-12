@@ -1,15 +1,19 @@
 <template>
   <div class="board">
     <AddNodeModal 
-      v-show="modalVisible"
-      @close="closeModal"
-      :allNodes="nodes"
-      :selectedNode="modalNode"
-      :nodeParent="nodeParent"
+      v-if=modalVisible
+      v-show=modalVisible
+      @closeModal=closeModal
+      :allNodes=nodes
+      :selectedNode=modalNode
+      :nodeParent=nodeParent
+      :active=modalVisible
+      :edges=edges
+      :board_id=board_id
     />
     <h5 class="text-center">{{ boardData.name }}</h5>
     <h6 class="text-center">{{ boardData.description }}</h6>
-    <p class="text-center">Click on a node to add children, edit, or delete it</p>
+    <p class="text-center">Click on a node to add children, edit, or delete it. (Or if there are no nodes yet, click anywhere below to start!)</p>
     <div id="cy"></div>
   </div>
 </template>
@@ -31,7 +35,7 @@ export default {
       nodes: [],
       modalVisible: false,
       modalNode: null,
-      nodeParent:"",
+      nodeParent:""
     }
   },
   methods: {
@@ -60,7 +64,7 @@ export default {
           })
         })
       }).catch(err => {
-        console.error(err)
+        console.log(err)   
       })
 
       this.nodes = formattedNodes
@@ -74,6 +78,7 @@ export default {
         edges.map(edge => {
           formattedEdges.push({
             data: {
+              ref: edge.id, // calling the PK "ref" because ID is a field cytoscape needs constructed of start node id and end node id 
               id: `${edge.start_symbol}${edge.destination_symbol}`,
               source: edge.start_symbol.toString(), 
               target: edge.destination_symbol.toString()
@@ -132,42 +137,44 @@ export default {
     },
     raiseModal(node) {
       let parent = this.getParentNode(node)
-      
+
       this.modalNode = node 
 
-      if(parent) {
-        this.nodeParent = parent 
-      }
+      if(parent) this.nodeParent = parent 
+      
       this.modalVisible = true 
     }, 
-    closeModal() {
+    closeModal(refreshGraph) {
       this.modalVisible = false 
+
+      if(refreshGraph) {
+        this.reloadAllData()
+      }
     },
     getParentNode(node) {
       let edge = this.edges.filter(edge => {
         return edge.data.target == node.id 
       })[0]
 
-      console.log(edge)
-
       if(edge) {
         let parent = this.nodes.filter(node => {
-          console.log(node.data.id)
-          console.log(edge.data.source)
           return node.data.id == edge.data.source 
         })[0]
 
         return parent
       } 
+    },
+    async reloadAllData() {
+      await this.getBoard()
+      await this.getSymbols()
+      await this.getConnections()
+      await this.buildTree()
     }
   },
   async created() {
     // Don't want to build the tree until loaded 
-    await this.getBoard()
-    await this.getSymbols()
-    await this.getConnections()
-    await this.buildTree()
-  }
+    await this.reloadAllData()
+  },
 }
 </script>
 <style scoped>
