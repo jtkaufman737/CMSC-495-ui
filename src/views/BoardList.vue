@@ -72,7 +72,7 @@ export default {
     runNav(id) {
       this.$router.push(`board/${id}`)
     },
-    getBoards() {
+    async getBoards() {
       axios.get(`${this.api}/boards`).then(res => {
         this.boardList = res.data 
       }).catch(err => {
@@ -84,37 +84,37 @@ export default {
       this.editBoard.description = "" 
       this.newBoard = true 
     },
-    saveBoard(id) {
-      axios.patch(`${this.api}/boards/${id}`,
+    async saveBoard(id) {
+      await axios.patch(`${this.api}/boards/${id}`,
       {
         name: this.editBoard.name, 
         description: this.editBoard.description
-      }).then(() => {
-        this.getBoards()
+      }).then(async() => {
+        await this.getBoards()
         this.editBoard = { name: '', description: '' }
       }).catch(err => console.log(err))
     },
-    createBoard() {
-      axios.post(`${this.api}/boards`,
+    async createBoard() {
+      await axios.post(`${this.api}/boards`,
       {
         name: this.editBoard.name,
         description: this.editBoard.description
-      }).then(res => {
-        this.getBoards()
+      }).then(async res => {
+        await this.getBoards()
         this.newBoard = false 
       }).catch(err => {
         console.log(err)
       })
     }, 
-    deleteBoard(id) {
-      axios.delete(
+    async deleteBoard(id) {
+      await axios.delete(
         `${this.api}/boards/${id}`
-      ).then(() => this.getBoards()
+      ).then(async() => await this.getBoards()
       ).catch(err => console.log(err))
     }
   },
-  mounted() {
-    this.getBoards()
+  async mounted() {
+    await this.getBoards()
   }
 }
 </script>
