@@ -89,28 +89,28 @@ export default {
       {
         name: this.editBoard.name, 
         description: this.editBoard.description
-      }).then(async() => {
-        await this.getBoards()
-        this.editBoard = { name: '', description: '' }
       }).catch(err => console.log(err))
+
+      await this.getBoards()
+      this.editBoard = { name: '', description: '' }
     },
     async createBoard() {
       await axios.post(`${this.api}/boards`,
       {
         name: this.editBoard.name,
         description: this.editBoard.description
-      }).then(async res => {
-        await this.getBoards()
-        this.newBoard = false 
-      }).catch(err => {
-        console.log(err)
-      })
+      }).catch(err => console.log(err))
+
+      await this.getBoards()
+      this.newBoard = false 
+      this.editBoard = { name: '', description: '' }
     }, 
     async deleteBoard(id) {
       await axios.delete(
         `${this.api}/boards/${id}`
-      ).then(async() => await this.getBoards()
       ).catch(err => console.log(err))
+
+      await this.getBoards() 
     }
   },
   async mounted() {
