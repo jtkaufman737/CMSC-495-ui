@@ -103,6 +103,10 @@ export default {
       
       await axios.post(`${this.api}/boards`,
       {
+        headers:   { 
+          'Access-Control-Allow-Origin' : '*',
+          'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+        },
         name: this.editBoard.name,
         description: this.editBoard.description
       }).catch(err => console.log(err))

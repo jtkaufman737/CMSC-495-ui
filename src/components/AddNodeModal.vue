@@ -123,46 +123,61 @@ export default {
           this.changeTypeToAPICall[this.changeType]()  
         },
         async postNewNode() {
-          console.log("POST RUNNING")
-          // let newNodeID
+          let newNodeID
 
-          // // create symbol object
-          // await axios.post(`${this.api}/symbols`,
-          //   {
-          //     name: this.currEditNode.name, 
-          //     description: this.currEditNode.description,
-          //     symbol_type: this.currEditNode.symbol_type
-          //   }
-          // ).then(res => newNodeID = res.data.id 
-          // ).catch(err => console.log(err))
+          // create symbol object
+          await axios.post(`${this.api}/symbols`,
+            {
+              headers:   { 
+                'Access-Control-Allow-Origin' : '*',
+                'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+              },
+              name: this.currEditNode.name, 
+              description: this.currEditNode.description,
+              symbol_type: this.currEditNode.symbol_type
+            }
+          ).then(res => newNodeID = res.data.id 
+          ).catch(err => console.log(err))
 
-          // // create appropriate connections, IF not first node
-          // if(this.newNodeParent) {
-          //   console.log("NODE PARENT RECOGNIZED")
-          //   await axios.post(`${this.api}/symbol-connections`,
-          //     {
-          //       start_symbol: parseInt(this.newNodeParent.id),
-          //       destination_symbol: parseInt(newNodeID),
-          //       board_id: this.board_id
-          //     }
-          //   ).then(res => console.log(res.data)).catch(err => console.log(err))
-          // }
+          // create appropriate connections, IF not first node
+          if(this.newNodeParent) {
+            console.log("NODE PARENT RECOGNIZED")
+            await axios.post(`${this.api}/symbol-connections`,
+              { 
+                headers:   { 
+                  'Access-Control-Allow-Origin' : '*',
+                  'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+                },
+                start_symbol: parseInt(this.newNodeParent.id),
+                destination_symbol: parseInt(newNodeID),
+                board_id: this.board_id
+              }
+            ).then(res => console.log(res.data)).catch(err => console.log(err))
+          }
 
-          // // create symbol/board membership 
-          // await axios.post(`${this.api}/board-symbols`,
-          //   {
-          //     board_id: this.board_id,
-          //     symbol_id: newNodeID
-          //   }
-          // ).catch(err => console.log(err))
+          // create symbol/board membership 
+          await axios.post(`${this.api}/board-symbols`,
+            {        
+              headers:   { 
+                'Access-Control-Allow-Origin' : '*',
+                'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+              },
+              board_id: this.board_id,
+              symbol_id: newNodeID
+            }
+          ).catch(err => console.log(err))
 
-          // this.closeModal(true)
+          this.closeModal(true)
         }, 
         async patchExistingNode() {
           console.log("PATCH EXISTING NODE RUNNING")
           // first deal with node itself 
           await axios.patch(`${this.api}/symbols/${this.selectedNode.id}`,
             {
+              headers:   { 
+                'Access-Control-Allow-Origin' : '*',
+                'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+              },
               name: this.currEditNode.name, 
               description: this.currEditNode.description,
               symbol_type: this.currEditNode.symbol_type
@@ -180,6 +195,10 @@ export default {
           if(edge) {
             await axios.patch(`${this.api}/symbol-connections/${edge.data.ref}`,
               {
+                headers:   { 
+                  'Access-Control-Allow-Origin' : '*',
+                  'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+                },
                 id: edge.ref, 
                 start_symbol: parseInt(this.newNodeParent.id),
                 destination_symbol: parseInt(this.currEditNode.id) 
