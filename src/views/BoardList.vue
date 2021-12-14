@@ -87,6 +87,10 @@ export default {
     async saveBoard(id) {
       await axios.patch(`${this.api}/boards/${id}`,
       {
+        headers:   { 
+          'Access-Control-Allow-Origin' : '*',
+          'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+        },
         name: this.editBoard.name, 
         description: this.editBoard.description
       }).catch(err => console.log(err))
@@ -107,7 +111,13 @@ export default {
     }, 
     async deleteBoard(id) {
       await axios.delete(
-        `${this.api}/boards/${id}`
+        `${this.api}/boards/${id}`,
+        {
+          headers:   { 
+            'Access-Control-Allow-Origin' : '*',
+            'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+          },
+        }
       ).catch(err => console.log(err))
 
       await this.getBoards() 
