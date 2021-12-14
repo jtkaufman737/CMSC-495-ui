@@ -99,6 +99,8 @@ export default {
       this.editBoard = { name: '', description: '' }
     },
     async createBoard() {
+      this.editBoard.id = "" 
+      
       await axios.post(`${this.api}/boards`,
       {
         name: this.editBoard.name,
